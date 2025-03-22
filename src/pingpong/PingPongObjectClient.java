@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class PingPongClient {
+public class PingPongObjectClient {
 
     public static void main(String[] args) {
 
@@ -13,8 +13,8 @@ public class PingPongClient {
              BufferedWriter bw = new BufferedWriter(
                      new OutputStreamWriter(server.getOutputStream())
              );
-             BufferedReader br = new BufferedReader(
-                     new InputStreamReader(server.getInputStream())
+             ObjectInputStream ois = new ObjectInputStream(
+                     server.getInputStream()
              );
              BufferedReader cli = new BufferedReader(
                      new InputStreamReader(System.in)
@@ -30,17 +30,21 @@ public class PingPongClient {
 
                 System.out.println(line + " -> an server gesendet");
 
+
+                // antwort lesen
+                Response response = (Response) ois.readObject();
+                System.out.println("response.getStatus() = " + response.getStatus());
+                System.out.println("response.getMessage() = " + response.getMessage());
+
                 if (line.equalsIgnoreCase("EXIT")) {
                     break;
                 }
-
-                // antwort lesen
-                String response = br.readLine();
-                System.out.println("response = " + response);
             }
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
